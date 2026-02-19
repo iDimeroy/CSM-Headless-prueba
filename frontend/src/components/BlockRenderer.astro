@@ -3,6 +3,7 @@
 import HeroSection from './blocks/HeroSection.astro';
 import TextWithImage from './blocks/TextWithImage.astro';
 import FeaturesList from './blocks/FeaturesList.astro';
+import Slider from './blocks/Slider.astro';
 
 export interface Block {
   id: string;
@@ -21,6 +22,7 @@ const BLOCK_MAP: Record<string, any> = {
   HeroSection,
   TextWithImage,
   FeaturesList,
+  Slider,
 };
 
 const Component = BLOCK_MAP[block.type];

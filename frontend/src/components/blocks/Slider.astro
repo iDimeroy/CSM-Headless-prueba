@@ -1,0 +1,218 @@
+---
+/**
+ * Slider / Carousel component
+ * Fetches active slides from the public API and renders a full-width carousel
+ */
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+let slides = [];
+
+try {
+    const res = await fetch(`${API_URL}/carousel`);
+    if (res.ok) slides = await res.json();
+} catch (e) {
+    console.error('Error fetching carousel:', e);
+}
+---
+
+{slides.length > 0 && (
+<section class="slider" id="slider">
+    <div class="slider__track">
+        {slides.map((slide, i) => (
+            <div class={`slider__slide ${i === 0 ? 'slider__slide--active' : ''}`} data-index={i}>
+                {slide.imagenUrl && (
+                    <img src={slide.imagenUrl} alt={slide.titulo} class="slider__bg" loading={i === 0 ? 'eager' : 'lazy'} />
+                )}
+                <div class="slider__overlay"></div>
+                <div class="slider__content">
+                    <h2 class="slider__title">{slide.titulo}</h2>
+                    {slide.descripcion && <p class="slider__desc">{slide.descripcion}</p>}
+                    {slide.botonTexto && (
+                        <a href={slide.botonUrl || '#'} class="slider__btn">{slide.botonTexto}</a>
+                    )}
+                </div>
+            </div>
+        ))}
+    </div>
+
+    <!-- Controls -->
+    {slides.length > 1 && (
+        <div class="slider__controls">
+            <button class="slider__arrow slider__arrow--prev" aria-label="Anterior">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="slider__dots">
+                {slides.map((_, i) => (
+                    <button class={`slider__dot ${i === 0 ? 'slider__dot--active' : ''}`} data-dot={i} aria-label={`Slide ${i + 1}`}></button>
+                ))}
+            </div>
+            <button class="slider__arrow slider__arrow--next" aria-label="Siguiente">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+        </div>
+    )}
+</section>
+)}
+
+<style>
+    .slider {
+        position: relative;
+        width: 100%;
+        height: 70vh;
+        min-height: 400px;
+        overflow: hidden;
+        background: #1a1a1a;
+    }
+    .slider__track { position: relative; width: 100%; height: 100%; }
+    .slider__slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.7s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .slider__slide--active { opacity: 1; z-index: 1; }
+    .slider__bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .slider__overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            135deg,
+            rgba(153, 21, 71, 0.65) 0%,
+            rgba(60, 60, 59, 0.55) 100%
+        );
+        z-index: 1;
+    }
+    .slider__content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        color: #fff;
+        max-width: 700px;
+        padding: 2rem;
+    }
+    .slider__title {
+        font-size: clamp(1.8rem, 4vw, 3.2rem);
+        font-weight: 800;
+        line-height: 1.15;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    .slider__desc {
+        font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+        opacity: 0.92;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    .slider__btn {
+        display: inline-block;
+        padding: 0.75rem 2rem;
+        background: #c49955;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 0.4rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        transition: all 0.25s ease;
+    }
+    .slider__btn:hover {
+        background: #b08940;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(196, 153, 85, 0.4);
+    }
+
+    /* Controls */
+    .slider__controls {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .slider__arrow {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .slider__arrow:hover {
+        background: rgba(196, 153, 85, 0.6);
+        border-color: #c49955;
+    }
+    .slider__dots { display: flex; gap: 0.5rem; }
+    .slider__dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid rgba(255,255,255,0.5);
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.25s;
+        padding: 0;
+    }
+    .slider__dot--active {
+        background: #c49955;
+        border-color: #c49955;
+        transform: scale(1.2);
+    }
+</style>
+
+<script>
+    // Auto-advance + controls
+    (function() {
+        const slider = document.getElementById('slider');
+        if (!slider) return;
+
+        const slides = slider.querySelectorAll('.slider__slide');
+        const dots = slider.querySelectorAll('.slider__dot');
+        const prevBtn = slider.querySelector('.slider__arrow--prev');
+        const nextBtn = slider.querySelector('.slider__arrow--next');
+        let current = 0;
+        let interval;
+
+        function goTo(index) {
+            slides[current].classList.remove('slider__slide--active');
+            dots[current]?.classList.remove('slider__dot--active');
+            current = (index + slides.length) % slides.length;
+            slides[current].classList.add('slider__slide--active');
+            dots[current]?.classList.add('slider__dot--active');
+        }
+
+        function startAuto() {
+            interval = setInterval(() => goTo(current + 1), 5000);
+        }
+
+        function resetAuto() {
+            clearInterval(interval);
+            startAuto();
+        }
+
+        prevBtn?.addEventListener('click', () => { goTo(current - 1); resetAuto(); });
+        nextBtn?.addEventListener('click', () => { goTo(current + 1); resetAuto(); });
+        dots.forEach((dot, i) => {
+            dot.addEventListener('click', () => { goTo(i); resetAuto(); });
+        });
+
+        if (slides.length > 1) startAuto();
+    })();
+</script>

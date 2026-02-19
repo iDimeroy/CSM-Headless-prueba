@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// Admin Dashboard — Page & Block management
+// Admin Dashboard — Page, Block & Carousel management
 // ═══════════════════════════════════════════════════════════════
 
 (function () {
@@ -34,7 +34,59 @@
     const blockEditError = document.getElementById('blockEditError');
     const toastContainer = document.getElementById('toastContainer');
 
+    // Carousel DOM refs
+    const carouselTableBody = document.getElementById('carouselTableBody');
+    const carouselModal = document.getElementById('carouselModal');
+    const carouselForm = document.getElementById('carouselForm');
+    const carouselModalTitle = document.getElementById('carouselModalTitle');
+    const carouselFormError = document.getElementById('carouselFormError');
+
+    // Sections
+    const sectionPages = document.getElementById('sectionPages');
+    const sectionCarousel = document.getElementById('sectionCarousel');
+    const topbarTitle = document.querySelector('.topbar__title');
+    const createPageBtn = document.getElementById('createPageBtn');
+    const sidebarLinks = document.querySelectorAll('.sidebar__link');
+
     let currentPageId = null;
+    let currentSection = 'pages';
+
+    // ── Section switching ────────────────────────────────────
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const section = link.dataset.section;
+            switchSection(section);
+        });
+    });
+
+    function switchSection(section) {
+        currentSection = section;
+
+        // Update sidebar active
+        sidebarLinks.forEach(l => l.classList.remove('sidebar__link--active'));
+        document.querySelector(`[data-section="${section}"]`)?.classList.add('sidebar__link--active');
+
+        // Toggle sections
+        sectionPages.style.display = section === 'pages' ? '' : 'none';
+        sectionCarousel.style.display = section === 'carousel' ? '' : 'none';
+
+        // Update topbar
+        if (section === 'pages') {
+            topbarTitle.textContent = 'Páginas';
+            createPageBtn.style.display = '';
+            createPageBtn.textContent = '';
+            createPageBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nueva Página';
+            createPageBtn.onclick = () => openPageModal();
+            loadPages();
+        } else if (section === 'carousel') {
+            topbarTitle.textContent = 'Panel de Gestión de Carrusel';
+            createPageBtn.style.display = '';
+            createPageBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nuevo Slide';
+            createPageBtn.onclick = () => openCarouselModal();
+            loadCarousel();
+        }
+    }
 
     // ── Toast ────────────────────────────────────────────────
     function toast(message, type = 'success') {
@@ -45,13 +97,36 @@
         setTimeout(() => el.remove(), 3000);
     }
 
-    // ── Load pages ───────────────────────────────────────────
+    // ── Helpers ──────────────────────────────────────────────
+    function formatDate(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatDateShort(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function esc(str) {
+        if (str == null) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    // ══════════════════════════════════════════════════════════
+    //  PAGES SECTION
+    // ══════════════════════════════════════════════════════════
+
     async function loadPages() {
         try {
             const pages = await API.get('/admin/pages');
             renderPagesTable(pages);
         } catch (err) {
-            pagesTableBody.innerHTML = `<tr><td colspan="6" class="table-empty" style="color:#fca5a5;">Error: ${err.message}</td></tr>`;
+            pagesTableBody.innerHTML = `<tr><td colspan="6" class="table-empty" style="color:var(--danger);">Error: ${err.message}</td></tr>`;
         }
     }
 
@@ -82,18 +157,6 @@
                 </td>
             </tr>
         `).join('');
-    }
-
-    function formatDate(iso) {
-        if (!iso) return '—';
-        const d = new Date(iso);
-        return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-    }
-
-    function esc(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
     }
 
     // ── Page CRUD ────────────────────────────────────────────
@@ -158,7 +221,7 @@
             const page = await API.get(`/admin/pages/${pageId}`);
             renderBlocksList(page.blocks || []);
         } catch (err) {
-            blocksList.innerHTML = `<div class="blocks-empty" style="color:#fca5a5;">Error: ${err.message}</div>`;
+            blocksList.innerHTML = `<div class="blocks-empty" style="color:var(--danger);">Error: ${err.message}</div>`;
         }
     }
 
@@ -249,17 +312,129 @@
         }
     });
 
+    // ══════════════════════════════════════════════════════════
+    //  CAROUSEL SECTION
+    // ══════════════════════════════════════════════════════════
+
+    async function loadCarousel() {
+        try {
+            const slides = await API.get('/admin/carousel');
+            renderCarouselTable(slides);
+        } catch (err) {
+            carouselTableBody.innerHTML = `<tr><td colspan="7" class="table-empty" style="color:var(--danger);">Error: ${err.message}</td></tr>`;
+        }
+    }
+
+    function renderCarouselTable(slides) {
+        if (!slides.length) {
+            carouselTableBody.innerHTML = '<tr><td colspan="7" class="table-empty">No hay slides. ¡Crea el primero!</td></tr>';
+            return;
+        }
+        carouselTableBody.innerHTML = slides.map(s => `
+            <tr>
+                <td><div class="block-card__order" style="margin:0 auto;">${s.orden}</div></td>
+                <td><strong>${esc(s.titulo)}</strong></td>
+                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted);font-size:0.82rem;">${esc(s.descripcion) || '—'}</td>
+                <td>${s.botonTexto ? `<code style="background:var(--accent-glow);color:var(--gold);padding:0.15em 0.5em;border-radius:4px;">${esc(s.botonTexto)}</code>` : '—'}</td>
+                <td><span class="badge badge--${s.estado.toLowerCase()}">${s.estado}</span></td>
+                <td style="font-size:0.78rem;color:var(--text-dim);">${formatDateShort(s.fechaInicio)}<br>→ ${formatDateShort(s.fechaFinal)}</td>
+                <td>
+                    <div class="table-actions">
+                        <button class="btn btn-ghost btn-sm" onclick="AdminApp.editSlide('${s.id}')" title="Editar">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="AdminApp.deleteSlide('${s.id}')" title="Eliminar">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // ── Carousel CRUD modal ──────────────────────────────────
+    function openCarouselModal(slide = null) {
+        carouselFormError.style.display = 'none';
+        carouselForm.reset();
+        if (slide) {
+            carouselModalTitle.textContent = 'Editar Slide';
+            document.getElementById('slideId').value = slide.id;
+            document.getElementById('slideTitulo').value = slide.titulo || '';
+            document.getElementById('slideDescripcion').value = slide.descripcion || '';
+            document.getElementById('slideImagenUrl').value = slide.imagenUrl || '';
+            document.getElementById('slideBotonTexto').value = slide.botonTexto || '';
+            document.getElementById('slideBotonUrl').value = slide.botonUrl || '';
+            document.getElementById('slideOrden').value = slide.orden || 1;
+            document.getElementById('slideEstado').value = slide.estado || 'DRAFT';
+
+            // Date handling (ISO → datetime-local format)
+            if (slide.fechaInicio) {
+                document.getElementById('slideFechaInicio').value = new Date(slide.fechaInicio).toISOString().slice(0, 16);
+            }
+            if (slide.fechaFinal) {
+                document.getElementById('slideFechaFinal').value = new Date(slide.fechaFinal).toISOString().slice(0, 16);
+            }
+        } else {
+            carouselModalTitle.textContent = 'Nuevo Slide';
+            document.getElementById('slideId').value = '';
+        }
+        carouselModal.style.display = 'flex';
+    }
+
+    function closeCarouselModal() { carouselModal.style.display = 'none'; }
+
+    carouselForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        carouselFormError.style.display = 'none';
+
+        const id = document.getElementById('slideId').value;
+        const fechaInicio = document.getElementById('slideFechaInicio').value;
+        const fechaFinal = document.getElementById('slideFechaFinal').value;
+
+        const body = {
+            titulo: document.getElementById('slideTitulo').value.trim(),
+            descripcion: document.getElementById('slideDescripcion').value.trim() || null,
+            imagenUrl: document.getElementById('slideImagenUrl').value.trim() || null,
+            fechaInicio: fechaInicio ? new Date(fechaInicio).toISOString() : null,
+            fechaFinal: fechaFinal ? new Date(fechaFinal).toISOString() : null,
+            botonTexto: document.getElementById('slideBotonTexto').value.trim() || null,
+            botonUrl: document.getElementById('slideBotonUrl').value.trim() || null,
+            orden: parseInt(document.getElementById('slideOrden').value, 10),
+            estado: document.getElementById('slideEstado').value,
+        };
+
+        try {
+            if (id) {
+                await API.put(`/admin/carousel/${id}`, body);
+                toast('Slide actualizado');
+            } else {
+                await API.post('/admin/carousel', body);
+                toast('Slide creado');
+            }
+            closeCarouselModal();
+            loadCarousel();
+        } catch (err) {
+            carouselFormError.textContent = err.message;
+            carouselFormError.style.display = 'block';
+        }
+    });
+
     // ── Event bindings ───────────────────────────────────────
-    document.getElementById('createPageBtn').addEventListener('click', () => openPageModal());
+    document.getElementById('createPageBtn').addEventListener('click', () => {
+        if (currentSection === 'carousel') openCarouselModal();
+        else openPageModal();
+    });
     document.getElementById('closePageModal').addEventListener('click', closePageModal);
     document.getElementById('cancelPageModal').addEventListener('click', closePageModal);
     document.getElementById('closeBlocksModal').addEventListener('click', closeBlocksModal);
     document.getElementById('addBlockBtn').addEventListener('click', () => openBlockEditModal(null));
     document.getElementById('closeBlockEditModal').addEventListener('click', closeBlockEditModal);
     document.getElementById('cancelBlockEditModal').addEventListener('click', closeBlockEditModal);
+    document.getElementById('closeCarouselModal').addEventListener('click', closeCarouselModal);
+    document.getElementById('cancelCarouselModal').addEventListener('click', closeCarouselModal);
 
     // Close modals on backdrop click
-    [pageModal, blocksModal, blockEditModal].forEach(modal => {
+    [pageModal, blocksModal, blockEditModal, carouselModal].forEach(modal => {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) modal.style.display = 'none';
         });
@@ -308,6 +483,22 @@
                 await API.del(`/admin/blocks/${blockId}`);
                 toast('Bloque eliminado');
                 loadBlocks(currentPageId);
+            } catch (err) { toast(err.message, 'error'); }
+        },
+
+        async editSlide(id) {
+            try {
+                const slide = await API.get(`/admin/carousel/${id}`);
+                openCarouselModal(slide);
+            } catch (err) { toast(err.message, 'error'); }
+        },
+
+        async deleteSlide(id) {
+            if (!confirm('¿Eliminar este slide del carrusel?')) return;
+            try {
+                await API.del(`/admin/carousel/${id}`);
+                toast('Slide eliminado');
+                loadCarousel();
             } catch (err) { toast(err.message, 'error'); }
         },
     };
