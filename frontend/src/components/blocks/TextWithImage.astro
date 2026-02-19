@@ -1,0 +1,106 @@
+---
+// TextWithImage block component
+export interface Props {
+  layout?: 'image_left' | 'image_right';
+  title: string;
+  content: string;
+  imageUrl?: string;
+  imageAlt?: string;
+}
+const {
+  layout = 'image_right',
+  title,
+  content,
+  imageUrl,
+  imageAlt = ''
+} = Astro.props;
+const isImageLeft = layout === 'image_left';
+---
+
+<section class="twi">
+  <div class={`container twi__inner ${isImageLeft ? 'twi__inner--reverse' : ''}`}>
+    <div class="twi__text">
+      <h2 class="twi__title">{title}</h2>
+      <div class="twi__content" set:html={content} />
+    </div>
+    {imageUrl && (
+      <div class="twi__image-wrap">
+        <img src={imageUrl} alt={imageAlt} class="twi__image" loading="lazy" />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .twi {
+    padding: 6rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .twi__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .twi__inner--reverse {
+    direction: rtl;
+  }
+  .twi__inner--reverse > * {
+    direction: ltr;
+  }
+
+  .twi__title {
+    font-size: clamp(1.8rem, 4vw, 2.75rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.25rem;
+    color: var(--color-text);
+  }
+
+  .twi__content {
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
+
+  .twi__content :global(p) { margin-bottom: 1rem; }
+  .twi__content :global(a) { color: var(--color-primary); }
+
+  .twi__image-wrap {
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+
+  .twi__image-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(99,102,241,0.15), transparent);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .twi__image {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .twi__image-wrap:hover .twi__image {
+    transform: scale(1.03);
+  }
+
+  @media (max-width: 768px) {
+    .twi__inner,
+    .twi__inner--reverse {
+      grid-template-columns: 1fr;
+      direction: ltr;
+    }
+  }
+</style>

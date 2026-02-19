@@ -1,0 +1,49 @@
+---
+// Dynamic page route — fetches content from Spring Boot API by slug
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+
+const { slug } = Astro.params;
+const apiUrl = import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8080';
+
+let page = null;
+let error = null;
+
+try {
+  const res = await fetch(`${apiUrl}/api/v1/pages/${slug}`);
+  if (res.ok) {
+    page = await res.json();
+  } else if (res.status === 404) {
+    return Astro.redirect('/404');
+  } else {
+    error = `Error ${res.status}: ${res.statusText}`;
+  }
+} catch (e) {
+  error = 'Could not connect to the CMS API. Make sure the backend is running.';
+}
+---
+
+{error && (
+  <BaseLayout title="Error">
+    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;">
+      <div style="background:#1e293b;border:1px solid rgba(239,68,68,0.4);border-radius:1rem;padding:3rem;max-width:560px;text-align:center;">
+        <h1 style="color:#f87171;font-size:1.5rem;margin-bottom:1rem;">⚠️ API Connection Error</h1>
+        <p style="color:#94a3b8;">{error}</p>
+        <code style="display:block;margin-top:1.5rem;background:rgba(0,0,0,0.4);padding:1rem;border-radius:0.5rem;color:#a5b4fc;font-size:0.9rem;">
+          GET {apiUrl}/api/v1/pages/{slug}
+        </code>
+      </div>
+    </div>
+  </BaseLayout>
+)}
+
+{page && (
+  <BaseLayout title={page.title} seoTitle={page.seoTitle}>
+    {page.blocks
+      .sort((a: any, b: any) => a.sortOrder - b.sortOrder)
+      .map((block: any) => (
+        <BlockRenderer block={block} />
+      ))
+    }
+  </BaseLayout>
+)}

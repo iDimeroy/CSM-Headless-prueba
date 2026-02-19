@@ -1,0 +1,54 @@
+---
+// BlockRenderer — maps block.type → the correct Astro component
+import HeroSection from './blocks/HeroSection.astro';
+import TextWithImage from './blocks/TextWithImage.astro';
+import FeaturesList from './blocks/FeaturesList.astro';
+
+export interface Block {
+  id: string;
+  type: string;
+  sortOrder: number;
+  payload: Record<string, unknown>;
+}
+
+export interface Props {
+  block: Block;
+}
+
+const { block } = Astro.props;
+
+const BLOCK_MAP: Record<string, any> = {
+  HeroSection,
+  TextWithImage,
+  FeaturesList,
+};
+
+const Component = BLOCK_MAP[block.type];
+---
+
+{Component
+  ? <Component {...block.payload} />
+  : (
+    <div class="unknown-block">
+      <p>⚠️ Unknown block type: <code>{block.type}</code></p>
+    </div>
+  )
+}
+
+<style>
+  .unknown-block {
+    padding: 2rem;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.4);
+    border-radius: 0.5rem;
+    color: #fca5a5;
+    text-align: center;
+    margin: 1rem auto;
+    max-width: 600px;
+  }
+  .unknown-block code {
+    background: rgba(0,0,0,0.3);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+  }
+</style>
