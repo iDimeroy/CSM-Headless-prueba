@@ -1,0 +1,34 @@
+---
+export interface Props {
+  content: string;
+  align?: 'left' | 'center' | 'justify';
+}
+
+const { content, align = 'left' } = Astro.props;
+---
+
+<div class="descripcion-block" style={`text-align: ${align};`}>
+  <Fragment set:html={content} />
+</div>
+
+<style>
+  .descripcion-block {
+    padding: 1rem;
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--color-text, #333);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .descripcion-block :global(p) {
+    margin-bottom: 1rem;
+  }
+  .descripcion-block :global(a) {
+    color: var(--color-primary, #2563eb);
+    text-decoration: underline;
+  }
+  .descripcion-block :global(b),
+  .descripcion-block :global(strong) {
+    font-weight: 600;
+  }
+</style>

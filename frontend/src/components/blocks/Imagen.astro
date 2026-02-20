@@ -1,0 +1,39 @@
+---
+export interface Props {
+  imageUrl: string;
+  alt?: string;
+  caption?: string;
+  width?: string;
+}
+
+const { imageUrl, alt = '', caption, width = '100%' } = Astro.props;
+---
+
+<figure class="imagen-block">
+  <img
+    src={imageUrl}
+    alt={alt}
+    style={`max-width: ${width}; width: 100%;`}
+    loading="lazy"
+  />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .imagen-block {
+    margin: 1.5rem auto;
+    padding: 0;
+    text-align: center;
+  }
+  .imagen-block img {
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+  .imagen-block figcaption {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: #666;
+    font-style: italic;
+  }
+</style>

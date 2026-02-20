@@ -1,0 +1,57 @@
+---
+export interface Props {
+  topText: string;
+  imageUrl: string;
+  imageAlt?: string;
+  bottomText: string;
+}
+
+const { topText, imageUrl, imageAlt = '', bottomText } = Astro.props;
+---
+
+<div class="sandwich-block">
+  <div class="sandwich-text sandwich-text--top">
+    <Fragment set:html={topText} />
+  </div>
+  <div class="sandwich-image">
+    <img src={imageUrl} alt={imageAlt} loading="lazy" />
+  </div>
+  <div class="sandwich-text sandwich-text--bottom">
+    <Fragment set:html={bottomText} />
+  </div>
+</div>
+
+<style>
+  .sandwich-block {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  .sandwich-text {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--color-text, #333);
+  }
+  .sandwich-text--top {
+    margin-bottom: 1.5rem;
+  }
+  .sandwich-text--bottom {
+    margin-top: 1.5rem;
+  }
+  .sandwich-image {
+    text-align: center;
+  }
+  .sandwich-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+  .sandwich-text :global(p) {
+    margin-bottom: 0.75rem;
+  }
+  .sandwich-text :global(a) {
+    color: var(--color-primary, #2563eb);
+    text-decoration: underline;
+  }
+</style>

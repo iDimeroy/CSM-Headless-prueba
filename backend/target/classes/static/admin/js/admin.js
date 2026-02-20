@@ -255,23 +255,40 @@
         blockEditForm.reset();
         document.getElementById('blockEditId').value = blockId || '';
         document.getElementById('blockEditPageId').value = currentPageId;
-        document.getElementById('blockType').value = type || 'HeroSection';
+
+        const selectedType = type || 'Titulo1';
+        document.getElementById('blockType').value = selectedType;
         document.getElementById('blockSortOrder').value = sortOrder || 1;
 
+        // Render dynamic form fields
+        BlockForms.render(selectedType);
+
+        // Populate form fields from existing payload
+        let parsedPayload = null;
         if (payloadStr) {
             try {
-                const parsed = typeof payloadStr === 'string' ? JSON.parse(payloadStr) : payloadStr;
-                document.getElementById('blockPayload').value = JSON.stringify(parsed, null, 2);
+                parsedPayload = typeof payloadStr === 'string' ? JSON.parse(payloadStr) : payloadStr;
+                document.getElementById('blockPayload').value = JSON.stringify(parsedPayload, null, 2);
             } catch {
                 document.getElementById('blockPayload').value = payloadStr;
             }
+            // Populate the dynamic form fields
+            if (parsedPayload) {
+                BlockForms.populate(selectedType, parsedPayload);
+            }
         } else {
-            document.getElementById('blockPayload').value = '{\n  \n}';
+            document.getElementById('blockPayload').value = '';
         }
 
         blockEditTitle.textContent = blockId ? 'Editar Bloque' : 'Nuevo Bloque';
         blockEditModal.style.display = 'flex';
     }
+
+    // Re-render form fields when block type changes
+    document.getElementById('blockType').addEventListener('change', (e) => {
+        BlockForms.render(e.target.value);
+        document.getElementById('blockPayload').value = '';
+    });
 
     function closeBlockEditModal() { blockEditModal.style.display = 'none'; }
 
@@ -279,19 +296,32 @@
         e.preventDefault();
         blockEditError.style.display = 'none';
 
+        const blockType = document.getElementById('blockType').value;
         let payload;
-        try {
-            payload = JSON.parse(document.getElementById('blockPayload').value);
-        } catch (err) {
-            blockEditError.textContent = 'JSON inválido: ' + err.message;
-            blockEditError.style.display = 'block';
-            return;
+
+        // First try to collect from dynamic form fields
+        const formPayload = BlockForms.collect(blockType);
+        const jsonTextarea = document.getElementById('blockPayload').value.trim();
+
+        // If JSON textarea has content, use it (advanced mode); otherwise use form fields
+        if (jsonTextarea) {
+            try {
+                payload = JSON.parse(jsonTextarea);
+            } catch (err) {
+                blockEditError.textContent = 'JSON inválido: ' + err.message;
+                blockEditError.style.display = 'block';
+                return;
+            }
+        } else if (Object.keys(formPayload).length > 0) {
+            payload = formPayload;
+        } else {
+            payload = {};
         }
 
         const blockId = document.getElementById('blockEditId').value;
         const pageId = document.getElementById('blockEditPageId').value;
         const body = {
-            type: document.getElementById('blockType').value,
+            type: blockType,
             sortOrder: parseInt(document.getElementById('blockSortOrder').value, 10),
             payload,
         };

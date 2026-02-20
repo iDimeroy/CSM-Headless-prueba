@@ -200,9 +200,18 @@
                     <div class="form-group">
                         <label class="form-label" for="blockType">Tipo de Bloque</label>
                         <select id="blockType" class="form-input" required>
-                            <option value="HeroSection">HeroSection</option>
-                            <option value="TextWithImage">TextWithImage</option>
-                            <option value="FeaturesList">FeaturesList</option>
+                            <option value="Slider">🎠 Slider</option>
+                            <option value="Titulo1">📌 Título 1 (H1)</option>
+                            <option value="Titulo2">📎 Título 2 (H2)</option>
+                            <option value="Imagen">🖼️ Imagen</option>
+                            <option value="Descripcion">📝 Descripción / Texto</option>
+                            <option value="Boton">🔘 Botón</option>
+                            <option value="Mapa">📍 Mapa</option>
+                            <option value="Acordeon">📂 Acordeón</option>
+                            <option value="Sandwich">🥪 Sandwich</option>
+                            <option value="HeroSection">🦸 Hero Section</option>
+                            <option value="TextWithImage">📄 Texto con Imagen</option>
+                            <option value="FeaturesList">⭐ Lista de Features</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -210,11 +219,15 @@
                         <input type="number" id="blockSortOrder" class="form-input" value="1" min="1" required>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="blockPayload">Payload (JSON)</label>
-                    <textarea id="blockPayload" class="form-input form-textarea" rows="10" required
-                        placeholder='{"title": "Mi Título", "subtitle": "..."}'></textarea>
+                <div id="blockFormFields">
+                    <!-- Dynamic fields will be injected here by JS -->
                 </div>
+                <details class="json-details" style="margin-top:0.5rem;">
+                    <summary style="cursor:pointer;color:var(--text-dim);font-size:0.75rem;">⚙️ JSON Avanzado (opcional)
+                    </summary>
+                    <textarea id="blockPayload" class="form-input form-textarea" rows="6"
+                        placeholder='{"title": "Mi Título", "subtitle": "..."}' style="margin-top:0.5rem;"></textarea>
+                </details>
                 <div id="blockEditError" class="form-error" style="display:none;"></div>
                 <div class="modal__actions">
                     <button type="button" class="btn btn-ghost" id="cancelBlockEditModal">Cancelar</button>
@@ -297,6 +310,7 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <script src="/admin/js/api.js"></script>
+    <script src="/admin/js/block-forms.js"></script>
     <script src="/admin/js/admin.js"></script>
 </body>
 

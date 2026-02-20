@@ -1,0 +1,37 @@
+---
+export interface Props {
+  embedUrl: string;
+  title?: string;
+  height?: number;
+}
+
+const { embedUrl, title = 'Mapa', height = 450 } = Astro.props;
+---
+
+<div class="mapa-block">
+  <iframe
+    src={embedUrl}
+    title={title}
+    width="100%"
+    height={height}
+    style="border:0;"
+    allowfullscreen
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+  ></iframe>
+</div>
+
+<style>
+  .mapa-block {
+    padding: 1rem;
+    margin: 1rem auto;
+    max-width: 1200px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+  .mapa-block iframe {
+    display: block;
+    border-radius: 8px;
+  }
+</style>

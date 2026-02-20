@@ -1,0 +1,79 @@
+---
+export interface AcordeonItem {
+  title: string;
+  content: string;
+}
+
+export interface Props {
+  items: AcordeonItem[];
+}
+
+const { items = [] } = Astro.props;
+---
+
+<div class="acordeon-block">
+  {items.map((item) => (
+    <details class="acordeon-item">
+      <summary class="acordeon-title">{item.title}</summary>
+      <div class="acordeon-content">
+        <Fragment set:html={item.content} />
+      </div>
+    </details>
+  ))}
+</div>
+
+<style>
+  .acordeon-block {
+    max-width: 800px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+  }
+  .acordeon-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+  }
+  .acordeon-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  .acordeon-item[open] {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+  .acordeon-title {
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--color-heading, #1a1a2e);
+    background: #fafafa;
+    transition: background 0.2s ease;
+  }
+  .acordeon-title:hover {
+    background: #f1f5f9;
+  }
+  .acordeon-title::after {
+    content: '+';
+    font-size: 1.25rem;
+    font-weight: 300;
+    transition: transform 0.2s ease;
+  }
+  .acordeon-item[open] .acordeon-title::after {
+    content: '−';
+  }
+  .acordeon-title::-webkit-details-marker {
+    display: none;
+  }
+  .acordeon-content {
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--color-text, #444);
+    border-top: 1px solid #e2e8f0;
+  }
+</style>
