@@ -50,6 +50,7 @@
 
     let currentPageId = null;
     let currentSection = 'pages';
+    let blocksCache = {};
 
     // ── Section switching ────────────────────────────────────
     sidebarLinks.forEach(link => {
@@ -231,6 +232,8 @@
             return;
         }
         blocks.sort((a, b) => a.sortOrder - b.sortOrder);
+        // Cache block data so edit button can retrieve it by ID
+        blocks.forEach(b => { blocksCache[b.id] = b; });
         blocksList.innerHTML = blocks.map(b => `
             <div class="block-card">
                 <div class="block-card__info">
@@ -238,7 +241,7 @@
                     <div class="block-card__type">${esc(b.type)}</div>
                 </div>
                 <div class="block-card__actions">
-                    <button class="btn btn-ghost btn-sm" onclick="AdminApp.editBlock('${b.id}', '${esc(b.type)}', ${b.sortOrder}, ${esc(JSON.stringify(JSON.stringify(b.payload)))})" title="Editar">
+                    <button class="btn btn-ghost btn-sm" onclick="AdminApp.editBlock('${b.id}')" title="Editar">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
                     <button class="btn btn-danger btn-sm" onclick="AdminApp.deleteBlock('${b.id}')" title="Eliminar">
@@ -503,8 +506,13 @@
             openBlocksModal(pageId, title);
         },
 
-        editBlock(blockId, type, sortOrder, payloadStr) {
-            openBlockEditModal(blockId, type, sortOrder, payloadStr);
+        editBlock(blockId) {
+            const block = blocksCache[blockId];
+            if (!block) {
+                toast('No se pudo cargar el bloque', 'error');
+                return;
+            }
+            openBlockEditModal(blockId, block.type, block.sortOrder, block.payload);
         },
 
         async deleteBlock(blockId) {
