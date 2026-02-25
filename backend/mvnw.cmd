@@ -17,7 +17,7 @@ set "WRAPPER_JAR=%MAVEN_PROJECTBASEDIR%.mvn\wrapper\maven-wrapper.jar"
 "%JAVACMD%" ^
   %JVM_CONFIG_MAVEN_PROPS% ^
   %MAVEN_OPTS% ^
-  "-Dmaven.multiModuleProjectDirectory=%MAVEN_PROJECTBASEDIR%" ^
+  "-Dmaven.multiModuleProjectDirectory=%MAVEN_PROJECTBASEDIR:~0,-1%" ^
   -classpath "%WRAPPER_JAR%" ^
   org.apache.maven.wrapper.MavenWrapperMain %*
 

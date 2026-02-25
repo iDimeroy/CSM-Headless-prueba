@@ -306,19 +306,22 @@
         const formPayload = BlockForms.collect(blockType);
         const jsonTextarea = document.getElementById('blockPayload').value.trim();
 
-        // If JSON textarea has content, use it (advanced mode); otherwise use form fields
+        // Merge both, prioritizing visual form inputs
+        let jsonPayload = {};
         if (jsonTextarea) {
             try {
-                payload = JSON.parse(jsonTextarea);
+                jsonPayload = JSON.parse(jsonTextarea);
             } catch (err) {
                 blockEditError.textContent = 'JSON inválido: ' + err.message;
                 blockEditError.style.display = 'block';
                 return;
             }
-        } else if (Object.keys(formPayload).length > 0) {
-            payload = formPayload;
+        }
+
+        if (Object.keys(formPayload).length > 0) {
+            payload = { ...jsonPayload, ...formPayload };
         } else {
-            payload = {};
+            payload = jsonPayload;
         }
 
         const blockId = document.getElementById('blockEditId').value;

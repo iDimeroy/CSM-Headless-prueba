@@ -12,6 +12,15 @@ try {
 } catch (e) {
     console.error('Error fetching carousel:', e);
 }
+
+const resolveImageUrl = (url?: string) => {
+  if (!url) return '';
+  if (url.startsWith('/')) {
+    const base = API_URL.replace('/api/v1', '') || 'http://localhost:8080';
+    return `${base}${url}`;
+  }
+  return url;
+};
 ---
 
 {slides.length > 0 && (
@@ -20,7 +29,7 @@ try {
         {slides.map((slide, i) => (
             <div class={`slider__slide ${i === 0 ? 'slider__slide--active' : ''}`} data-index={i}>
                 {slide.imagenUrl && (
-                    <img src={slide.imagenUrl} alt={slide.titulo} class="slider__bg" loading={i === 0 ? 'eager' : 'lazy'} />
+                    <img src={resolveImageUrl(slide.imagenUrl)} alt={slide.titulo} class="slider__bg" loading={i === 0 ? 'eager' : 'lazy'} />
                 )}
                 <div class="slider__overlay"></div>
                 <div class="slider__content">

@@ -35,4 +35,29 @@ const API = {
     post(path, body) { return this._request('POST', path, body); },
     put(path, body) { return this._request('PUT', path, body); },
     del(path) { return this._request('DELETE', path); },
+
+    async uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const headers = {};
+        const token = localStorage.getItem('cms_token');
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const res = await fetch(this.BASE + '/admin/upload', {
+            method: 'POST',
+            headers: headers,
+            body: formData
+        });
+
+        if (res.status === 401 || res.status === 403) {
+            localStorage.clear();
+            window.location.href = '/admin/login.html';
+            throw new Error('Session expired');
+        }
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || `Error ${res.status}`);
+        return data;
+    }
 };

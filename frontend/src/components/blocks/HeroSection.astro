@@ -8,11 +8,20 @@ export interface Props {
   backgroundImage?: string;
 }
 const { title, subtitle, ctaText, ctaUrl, backgroundImage } = Astro.props;
+
+const resolveImageUrl = (url?: string) => {
+  if (!url) return '';
+  if (url.startsWith('/')) {
+    return `${import.meta.env.PUBLIC_API_URL || 'http://localhost:8080'}${url}`;
+  }
+  return url;
+};
+const finalBgImage = resolveImageUrl(backgroundImage);
 ---
 
 <section
   class="hero"
-  style={backgroundImage ? `--hero-bg: url('${backgroundImage}')` : ''}
+  style={finalBgImage ? `--hero-bg: url('${finalBgImage}')` : ''}
 >
   <div class="hero__overlay" />
   <div class="container hero__content">

@@ -7,13 +7,28 @@ export interface Props {
 }
 
 const { imageUrl, alt = '', caption, width = '100%' } = Astro.props;
+
+const resolveImageUrl = (url?: string) => {
+  if (!url) return '';
+  if (url.startsWith('/')) {
+    return `${import.meta.env.PUBLIC_API_URL || 'http://localhost:8080'}${url}`;
+  }
+  return url;
+};
+const finalImageUrl = resolveImageUrl(imageUrl);
+
+// Format width appropriately
+let finalWidth = (width || '100%').toString().trim();
+if (/^\d+$/.test(finalWidth)) {
+  finalWidth += 'px';
+}
 ---
 
 <figure class="imagen-block">
   <img
-    src={imageUrl}
+    src={finalImageUrl}
     alt={alt}
-    style={`max-width: ${width}; width: 100%;`}
+    style={`width: ${finalWidth}; max-width: 100%;`}
     loading="lazy"
   />
   {caption && <figcaption>{caption}</figcaption>}
@@ -24,11 +39,16 @@ const { imageUrl, alt = '', caption, width = '100%' } = Astro.props;
     margin: 1.5rem auto;
     padding: 0;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .imagen-block img {
     height: auto;
     border-radius: 8px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    margin: 0 auto;
+    display: block;
   }
   .imagen-block figcaption {
     margin-top: 0.75rem;

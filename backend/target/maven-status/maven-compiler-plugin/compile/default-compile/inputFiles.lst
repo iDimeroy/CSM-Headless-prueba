@@ -1,4 +1,5 @@
 C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\service\CarouselService.java
+C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\controller\FileUploadController.java
 C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\config\DataInitializer.java
 C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\entity\User.java
 C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\entity\CarouselSlide.java
@@ -22,6 +23,7 @@ C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java
 C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\repository\PageRepository.java
 C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\service\AuthService.java
 C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\entity\Block.java
+C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\config\WebConfig.java
 C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\controller\PublicPageController.java
 C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\dto\CarouselSlideDto.java
 C:\Users\RogelioCastilloAcost\Documents\Projects\F_COBATAB\backend\src\main\java\com\cobatab\cms\repository\UserRepository.java

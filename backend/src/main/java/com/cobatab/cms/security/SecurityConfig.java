@@ -41,6 +41,7 @@ public class SecurityConfig {
                         // Public endpoints
                         .requestMatchers(HttpMethod.GET, "/api/v1/pages/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/carousel").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         // Admin endpoints require authentication
                         .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN", "EDITOR")

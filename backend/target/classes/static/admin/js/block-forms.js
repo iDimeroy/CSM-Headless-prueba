@@ -43,7 +43,13 @@ const BlockForms = {
         Imagen: () => `
             <div class="form-group">
                 <label class="form-label">URL de la Imagen</label>
-                <input type="text" class="form-input" data-field="imageUrl" placeholder="https://..." required>
+                <div style="display:flex; gap:0.5rem;">
+                    <input type="text" class="form-input" data-field="imageUrl" placeholder="https://..." required style="flex:1;">
+                    <button type="button" class="btn btn-outline" onclick="BlockForms.triggerUpload(this)" title="Subir Imagen">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </button>
+                    <input type="file" style="display:none;" accept="image/*" onchange="BlockForms.handleUpload(this)">
+                </div>
             </div>
             <div class="form-group">
                 <label class="form-label">Texto alternativo (alt)</label>
@@ -137,6 +143,22 @@ const BlockForms = {
                         <label class="form-label" style="font-size:0.8rem;">Contenido</label>
                         <textarea class="form-input acordeon-content" rows="3" placeholder="Respuesta o contenido..." required></textarea>
                     </div>
+                    <div class="form-row" style="margin-bottom:0;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label" style="font-size:0.8rem;">Texto del botón (Opcional)</label>
+                            <input type="text" class="form-input acordeon-btn-text" placeholder="Ej. Descargar PDF">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label" style="font-size:0.8rem;">Enlace o Archivo</label>
+                            <div style="display:flex; gap:0.5rem;">
+                                <input type="text" class="form-input acordeon-btn-url" placeholder="URL o archivo..." style="flex:1;">
+                                <button type="button" class="btn btn-outline" onclick="BlockForms.triggerUpload(this)" title="Subir Archivo">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                </button>
+                                <input type="file" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="BlockForms.handleUpload(this)">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <button type="button" class="btn btn-outline btn-sm" onclick="BlockForms.addAcordeonItem()" style="margin-top:0.25rem;">
@@ -153,7 +175,13 @@ const BlockForms = {
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">URL de la Imagen</label>
-                    <input type="text" class="form-input" data-field="imageUrl" placeholder="https://..." required>
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="text" class="form-input" data-field="imageUrl" placeholder="https://..." required style="flex:1;">
+                        <button type="button" class="btn btn-outline" onclick="BlockForms.triggerUpload(this)" title="Subir Imagen">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </button>
+                        <input type="file" style="display:none;" accept="image/*" onchange="BlockForms.handleUpload(this)">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Alt de la imagen</label>
@@ -188,7 +216,13 @@ const BlockForms = {
             </div>
             <div class="form-group">
                 <label class="form-label">Imagen de fondo (URL)</label>
-                <input type="text" class="form-input" data-field="backgroundImage" placeholder="https://...">
+                <div style="display:flex; gap:0.5rem;">
+                    <input type="text" class="form-input" data-field="backgroundImage" placeholder="https://..." style="flex:1;">
+                    <button type="button" class="btn btn-outline" onclick="BlockForms.triggerUpload(this)" title="Subir Imagen">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </button>
+                    <input type="file" style="display:none;" accept="image/*" onchange="BlockForms.handleUpload(this)">
+                </div>
             </div>`,
 
         TextWithImage: () => `
@@ -204,7 +238,13 @@ const BlockForms = {
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">URL de la Imagen</label>
-                    <input type="text" class="form-input" data-field="imageUrl" placeholder="https://...">
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="text" class="form-input" data-field="imageUrl" placeholder="https://..." style="flex:1;">
+                        <button type="button" class="btn btn-outline" onclick="BlockForms.triggerUpload(this)" title="Subir Imagen">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </button>
+                        <input type="file" style="display:none;" accept="image/*" onchange="BlockForms.handleUpload(this)">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Layout</label>
@@ -276,7 +316,7 @@ const BlockForms = {
             const container = document.getElementById('acordeonItems');
             container.innerHTML = '';
             payload.items.forEach(item => {
-                this.addAcordeonItem(item.title, item.content);
+                this.addAcordeonItem(item.title, item.content, item.buttonText, item.buttonUrl);
             });
         }
 
@@ -309,13 +349,17 @@ const BlockForms = {
             }
         });
 
-        // Special: Acordeon
         if (type === 'Acordeon') {
             const items = [];
             document.querySelectorAll('#acordeonItems .acordeon-item').forEach(item => {
                 const title = item.querySelector('.acordeon-title').value.trim();
                 const content = item.querySelector('.acordeon-content').value.trim();
-                if (title && content) items.push({ title, content });
+                const buttonText = item.querySelector('.acordeon-btn-text')?.value.trim() || '';
+                const buttonUrl = item.querySelector('.acordeon-btn-url')?.value.trim() || '';
+
+                if (title && content) {
+                    items.push({ title, content, buttonText, buttonUrl });
+                }
             });
             payload.items = items;
         }
@@ -335,8 +379,7 @@ const BlockForms = {
         return payload;
     },
 
-    // ── Helper: add accordion item ───────────────────────────
-    addAcordeonItem(title = '', content = '') {
+    addAcordeonItem(title = '', content = '', buttonText = '', buttonUrl = '') {
         const container = document.getElementById('acordeonItems');
         const div = document.createElement('div');
         div.className = 'acordeon-item';
@@ -350,6 +393,22 @@ const BlockForms = {
             <div class="form-group">
                 <label class="form-label" style="font-size:0.8rem;">Contenido</label>
                 <textarea class="form-input acordeon-content" rows="3" placeholder="Respuesta o contenido..." required>${this._esc(content)}</textarea>
+            </div>
+            <div class="form-row" style="margin-bottom:0;">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" style="font-size:0.8rem;">Texto del botón (Opcional)</label>
+                    <input type="text" class="form-input acordeon-btn-text" placeholder="Ej. Descargar PDF" value="${this._esc(buttonText)}">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label class="form-label" style="font-size:0.8rem;">Enlace o Archivo</label>
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="text" class="form-input acordeon-btn-url" placeholder="URL o archivo..." value="${this._esc(buttonUrl)}" style="flex:1;">
+                        <button type="button" class="btn btn-outline" onclick="BlockForms.triggerUpload(this)" title="Subir Archivo">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </button>
+                        <input type="file" style="display:none;" accept="image/*,.pdf,.doc,.docx" onchange="BlockForms.handleUpload(this)">
+                    </div>
+                </div>
             </div>
         `;
         container.appendChild(div);
@@ -379,6 +438,36 @@ const BlockForms = {
             </div>
         `;
         container.appendChild(div);
+    },
+
+    triggerUpload(btn) {
+        const fileInput = btn.nextElementSibling;
+        fileInput.click();
+    },
+
+    async handleUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const textInput = input.previousElementSibling.previousElementSibling;
+        const btn = input.previousElementSibling;
+
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-bottom-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></span><style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>';
+        btn.disabled = true;
+
+        try {
+            const data = await API.uploadFile(file);
+            textInput.value = data.url;
+            // trigger change event inside the DOM if any listener exists
+            textInput.dispatchEvent(new Event('change'));
+        } catch (err) {
+            alert('Error al subir: ' + err.message);
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            input.value = ''; // reset file input for next time
+        }
     },
 
     _esc(str) {

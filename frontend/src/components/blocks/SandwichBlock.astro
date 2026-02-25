@@ -7,6 +7,15 @@ export interface Props {
 }
 
 const { topText, imageUrl, imageAlt = '', bottomText } = Astro.props;
+
+const resolveImageUrl = (url?: string) => {
+  if (!url) return '';
+  if (url.startsWith('/')) {
+    return `${import.meta.env.PUBLIC_API_URL || 'http://localhost:8080'}${url}`;
+  }
+  return url;
+};
+const finalImageUrl = resolveImageUrl(imageUrl);
 ---
 
 <div class="sandwich-block">
@@ -14,7 +23,7 @@ const { topText, imageUrl, imageAlt = '', bottomText } = Astro.props;
     <Fragment set:html={topText} />
   </div>
   <div class="sandwich-image">
-    <img src={imageUrl} alt={imageAlt} loading="lazy" />
+    <img src={finalImageUrl} alt={imageAlt} loading="lazy" />
   </div>
   <div class="sandwich-text sandwich-text--bottom">
     <Fragment set:html={bottomText} />
