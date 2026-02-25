@@ -116,4 +116,14 @@ public class PageService {
         }
         blockRepository.deleteById(blockId);
     }
+
+    @Transactional
+    public void reorderBlocks(List<BlockReorderDto> request) {
+        for (BlockReorderDto dto : request) {
+            Block block = blockRepository.findById(dto.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Block not found: " + dto.getId()));
+            block.setSortOrder(dto.getSortOrder());
+            blockRepository.save(block);
+        }
+    }
 }

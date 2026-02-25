@@ -76,4 +76,11 @@ public class AdminController {
         pageService.deleteBlock(blockId);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/pages/blocks/reorder")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    public ResponseEntity<Void> reorderBlocks(@Valid @RequestBody List<BlockReorderDto> request) {
+        pageService.reorderBlocks(request);
+        return ResponseEntity.ok().build();
+    }
 }

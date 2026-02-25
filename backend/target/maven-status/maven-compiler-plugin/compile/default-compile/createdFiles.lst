@@ -2,6 +2,7 @@ com\cobatab\cms\dto\PageRequestDto.class
 com\cobatab\cms\controller\CarouselController.class
 com\cobatab\cms\security\JwtAuthFilter.class
 com\cobatab\cms\repository\PageRepository.class
+com\cobatab\cms\dto\BlockReorderDto.class
 com\cobatab\cms\dto\PageResponseDto.class
 com\cobatab\cms\service\PageService.class
 com\cobatab\cms\dto\BlockDto.class

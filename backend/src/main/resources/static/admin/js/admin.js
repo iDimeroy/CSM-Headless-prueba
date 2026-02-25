@@ -280,7 +280,9 @@
 
     async function loadLandingPage() {
         try {
-            landingBlocksList.innerHTML = '<div class="blocks-empty">Cargando bloques...</div>';
+            if (!currentLandingBlocks.length) {
+                landingBlocksList.innerHTML = '<div class="blocks-empty">Cargando bloques...</div>';
+            }
             const pages = await API.get('/admin/pages');
             let lp = pages.find(p => p.slug === 'landing-page');
 
@@ -313,8 +315,11 @@
         // Cache block data so edit button can retrieve it by ID
         blocks.forEach(b => { blocksCache[b.id] = b; });
         container.innerHTML = blocks.map(b => `
-            <div class="block-card">
-                <div class="block-card__info">
+            <div class="block-card" data-id="${b.id}" style="display:flex; align-items:center;">
+                <div class="block-card__drag-handle" style="cursor:grab; padding: 0.5rem 1rem 0.5rem 0.5rem; color:var(--text-muted);" title="Arrastrar para reordenar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/></svg>
+                </div>
+                <div class="block-card__info" style="flex:1;">
                     <div class="block-card__order">${b.sortOrder}</div>
                     <div class="block-card__type"><strong>${esc(b.type)}</strong></div>
                 </div>
@@ -328,6 +333,55 @@
                 </div>
             </div>
         `).join('');
+
+        initSortable(container);
+    }
+
+    function initSortable(container) {
+        if (typeof Sortable === 'undefined') return;
+
+        if (container._sortable) {
+            container._sortable.destroy();
+        }
+
+        container._sortable = Sortable.create(container, {
+            handle: '.block-card__drag-handle',
+            animation: 150,
+            ghostClass: 'block-card--ghost',
+            onEnd: async (evt) => {
+                if (evt.oldIndex === evt.newIndex) return;
+
+                const orderData = Array.from(container.children).map((child, index) => {
+                    return {
+                        id: child.getAttribute('data-id'),
+                        sortOrder: index + 1
+                    };
+                });
+
+                Array.from(container.children).forEach((child, index) => {
+                    const orderEl = child.querySelector('.block-card__order');
+                    if (orderEl) orderEl.textContent = index + 1;
+                });
+
+                try {
+                    await API.put('/admin/pages/blocks/reorder', orderData);
+                    toast('El orden se guardó con éxito');
+
+                    orderData.forEach(item => {
+                        if (blocksCache[item.id]) blocksCache[item.id].sortOrder = item.sortOrder;
+                    });
+
+                    if (currentSection === 'landing') {
+                        currentLandingBlocks.forEach(b => {
+                            const updated = orderData.find(od => od.id === b.id);
+                            if (updated) b.sortOrder = updated.sortOrder;
+                        });
+                    }
+                } catch (err) {
+                    toast('Error al reordenar: ' + err.message, 'error');
+                }
+            }
+        });
     }
 
     // ── Block edit modal ─────────────────────────────────────
@@ -420,12 +474,16 @@
             }
             closeBlockEditModal();
 
+            const scrollPos = window.scrollY || document.documentElement.scrollTop;
+
             // Reload appropriate section
             if (currentSection === 'landing') {
-                loadLandingPage();
+                await loadLandingPage();
             } else {
-                loadBlocks(currentPageId);
+                await loadBlocks(currentPageId);
             }
+
+            window.scrollTo(0, scrollPos);
         } catch (err) {
             blockEditError.textContent = err.message;
             blockEditError.style.display = 'block';
@@ -610,11 +668,14 @@
             try {
                 await API.del(`/admin/blocks/${blockId}`);
                 toast('Bloque eliminado');
+
+                const scrollPos = window.scrollY || document.documentElement.scrollTop;
                 if (currentSection === 'landing') {
-                    loadLandingPage();
+                    await loadLandingPage();
                 } else {
-                    loadBlocks(currentPageId);
+                    await loadBlocks(currentPageId);
                 }
+                window.scrollTo(0, scrollPos);
             } catch (err) { toast(err.message, 'error'); }
         },
 
