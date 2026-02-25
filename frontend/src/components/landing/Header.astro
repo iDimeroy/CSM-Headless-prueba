@@ -1,0 +1,96 @@
+---
+---
+<header class="header sticky-nav">
+  <div class="container header-content">
+    <div class="logo">
+      <a href="/">
+        <span class="logo-text">COBATAB</span>
+      </a>
+    </div>
+    <nav class="nav">
+      <ul>
+        <li><a href="#">Inicio</a></li>
+        <li><a href="#">Planteles</a></li>
+        <li><a href="#">Oferta Educativa</a></li>
+        <li><a href="#">Trámites</a></li>
+        <li><a href="#">Transparencia</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn search-btn" aria-label="Buscar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </button>
+      <a href="#" class="btn btn-secondary">Inscribirse Ahora</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    background: rgba(139, 21, 56, 0.95);
+    color: white;
+    z-index: 1000;
+    transition: all 0.3s ease;
+  }
+  
+  .sticky-nav {
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(8px);
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  
+  .nav ul {
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .nav a {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    opacity: 0.9;
+  }
+  
+  .nav a:hover {
+    opacity: 1;
+    color: var(--color-secondary);
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .icon-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    opacity: 0.8;
+  }
+  
+  .icon-btn:hover {
+    opacity: 1;
+  }
+
+  @media (max-width: 968px) {
+    .nav {
+      display: none;
+    }
+  }
+</style>

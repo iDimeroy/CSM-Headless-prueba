@@ -1,9 +1,7 @@
 ---
 // BlockRenderer — maps block.type → the correct Astro component
-import HeroSection from './blocks/HeroSection.astro';
 import TextWithImage from './blocks/TextWithImage.astro';
 import FeaturesList from './blocks/FeaturesList.astro';
-import Slider from './blocks/Slider.astro';
 import Titulo1 from './blocks/Titulo1.astro';
 import Titulo2 from './blocks/Titulo2.astro';
 import Imagen from './blocks/Imagen.astro';
@@ -12,6 +10,12 @@ import Boton from './blocks/Boton.astro';
 import Mapa from './blocks/Mapa.astro';
 import Acordeon from './blocks/Acordeon.astro';
 import SandwichBlock from './blocks/SandwichBlock.astro';
+
+// Landing Page Specific Components
+import Hero from './landing/Hero.astro';
+import CapsulaTiempo from './landing/CapsulaTiempo.astro';
+import Ventajas from './landing/Ventajas.astro';
+import Convocatoria from './landing/Convocatoria.astro';
 
 export interface Block {
   id: string;
@@ -27,10 +31,12 @@ export interface Props {
 const { block } = Astro.props;
 
 const BLOCK_MAP: Record<string, any> = {
-  HeroSection,
+  Slider: Hero, // The Hero component handles the Slider structure
+  Capsula: CapsulaTiempo,
+  Servicios: Ventajas, // The Ventajas component correctly handles the Servicios grid
+  Convocatoria: Convocatoria,
   TextWithImage,
   FeaturesList,
-  Slider,
   Titulo1,
   Titulo2,
   Imagen,

@@ -1,0 +1,184 @@
+---
+const date = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">COBATAB</div>
+      <p>Colegio de Bachilleres de Tabasco. Comprometidos con la educación pública de calidad, formando jóvenes con valores y visión de futuro.</p>
+      <div class="social-links">
+        <a href="#" aria-label="Facebook">FB</a>
+        <a href="#" aria-label="Twitter">TW</a>
+        <a href="#" aria-label="Instagram">IG</a>
+      </div>
+    </div>
+    
+    <div class="footer-links">
+      <h4>Enlaces Rápidos</h4>
+      <ul>
+        <li><a href="#">Directorio Institucional</a></li>
+        <li><a href="#">Mapa Curricular</a></li>
+        <li><a href="#">Calendario Escolar</a></li>
+        <li><a href="#">Reglamento Escolar</a></li>
+        <li><a href="#">Buzón de Quejas</a></li>
+      </ul>
+    </div>
+    
+    <div class="footer-contact">
+      <h4>Contacto</h4>
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        Av. Gregorio Méndez No. 104-C,<br/>Col. Casa Blanca, Villahermosa, Tabasco.
+      </p>
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        (993) 316 8800
+      </p>
+      <p>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2-2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        contacto@cobatab.edu.mx
+      </p>
+    </div>
+    
+    <div class="footer-institutional">
+      <h4>Institucional</h4>
+      <div class="logos-gov">
+        <div class="placeholder-logo">GOBIERNO</div>
+        <div class="placeholder-logo">SEP</div>
+      </div>
+      <p class="small-text">Este portal cumple con los estándares de accesibilidad y transparencia 2025.</p>
+    </div>
+  </div>
+  
+  <div class="footer-bottom">
+    <div class="container flex-bottom">
+      <p>© {date} Colegio de Bachilleres de Tabasco. Todos los derechos reservados.</p>
+      <div class="bottom-links">
+        <a href="#">Aviso de Privacidad</a>
+        <a href="#">Términos de Uso</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: #4a0b1d;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 5rem 0 0;
+  }
+  
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem;
+    margin-bottom: 4rem;
+  }
+  
+  .footer-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1.5rem;
+  }
+  
+  .footer-brand p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  
+  .social-links {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .social-links a {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+  }
+  
+  .social-links a:hover {
+    background: var(--color-secondary);
+    color: white;
+    transform: translateY(-3px);
+  }
+  
+  h4 {
+    color: white;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .footer-links ul li {
+    margin-bottom: 0.75rem;
+  }
+  
+  .footer-links a {
+    font-size: 0.9rem;
+  }
+  
+  .footer-links a:hover {
+    color: white;
+    padding-left: 5px;
+  }
+  
+  .footer-contact p {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  
+  .footer-contact svg {
+    flex-shrink: 0;
+    color: var(--color-secondary);
+  }
+  
+  .logos-gov {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .placeholder-logo {
+    padding: 0.5rem 1rem;
+    background: white;
+    color: #333;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 4px;
+  }
+  
+  .small-text {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+  
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem 0;
+    font-size: 0.8rem;
+  }
+  
+  .flex-bottom {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .bottom-links {
+    display: flex;
+    gap: 2rem;
+  }
+</style>

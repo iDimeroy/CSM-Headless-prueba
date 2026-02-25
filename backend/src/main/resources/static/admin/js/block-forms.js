@@ -8,9 +8,72 @@ const BlockForms = {
     FORMS: {
 
         Slider: () => `
-            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:0.5rem;">
-                El Slider usa los slides del Carrusel. No requiere campos adicionales.
-            </p>`,
+            <div class="form-group">
+                <label class="form-label">Título del Slider</label>
+                <input type="text" class="form-input" data-field="title" placeholder="Ej. Slider Principal">
+            </div>
+            <div id="sliderItems"></div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="BlockForms.addSliderItem()" style="margin-top:0.25rem;">+ Agregar Slide</button>`,
+
+        Capsula: () => `
+            <div class="form-group">
+                <label class="form-label">Título</label>
+                <input type="text" class="form-input" data-field="title" placeholder="Título de la cápsula..." required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-input form-textarea" data-field="description" rows="3" placeholder="Descripción breve..." required></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">URL de Imagen o Video</label>
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="text" class="form-input" data-field="mediaUrl" placeholder="https://..." required style="flex:1;">
+                        <button type="button" class="btn btn-outline" onclick="BlockForms.triggerUpload(this)" title="Subir Archivo">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </button>
+                        <input type="file" style="display:none;" accept="image/*,video/*" onchange="BlockForms.handleUpload(this)">
+                    </div>
+                </div>
+            </div>`,
+
+        Servicios: () => `
+            <div class="form-group">
+                <label class="form-label">Título de la sección</label>
+                <input type="text" class="form-input" data-field="title" placeholder="Nuestros Servicios..." required>
+            </div>
+            <div id="serviceItems"></div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="BlockForms.addServiceItem()" style="margin-top:0.25rem;">+ Agregar Servicio</button>`,
+
+        Convocatoria: () => `
+            <div class="form-group">
+                <label class="form-label">Título de Convocatoria</label>
+                <input type="text" class="form-input" data-field="title" placeholder="Ej. Convocatoria 2026..." required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-input form-textarea" data-field="description" rows="3" placeholder="Detalles de convocatoria..." required></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Fecha de Inicio</label>
+                    <input type="date" class="form-input" data-field="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fecha de Cierre</label>
+                    <input type="date" class="form-input" data-field="endDate" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL de Documento / Formulario</label>
+                <div style="display:flex; gap:0.5rem;">
+                    <input type="text" class="form-input" data-field="documentUrl" placeholder="https://..." required style="flex:1;">
+                    <button type="button" class="btn btn-outline" onclick="BlockForms.triggerUpload(this)" title="Subir Archivo">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </button>
+                    <input type="file" style="display:none;" accept="application/pdf,application/msword" onchange="BlockForms.handleUpload(this)">
+                </div>
+            </div>`,
 
         Titulo1: () => `
             <div class="form-group">
@@ -320,6 +383,24 @@ const BlockForms = {
             });
         }
 
+        // Special: Slider items
+        if (type === 'Slider' && Array.isArray(payload.slides) && payload.slides.length > 0) {
+            const container = document.getElementById('sliderItems');
+            container.innerHTML = '';
+            payload.slides.forEach(s => {
+                this.addSliderItem(s.title, s.description, s.imageUrl, s.ctaText, s.ctaUrl);
+            });
+        }
+
+        // Special: Servicios items
+        if (type === 'Servicios' && Array.isArray(payload.services) && payload.services.length > 0) {
+            const container = document.getElementById('serviceItems');
+            container.innerHTML = '';
+            payload.services.forEach(s => {
+                this.addServiceItem(s.icon, s.name, s.description);
+            });
+        }
+
         // Special: FeaturesList items
         if (type === 'FeaturesList' && Array.isArray(payload.features) && payload.features.length > 0) {
             const container = document.getElementById('featuresItems');
@@ -349,6 +430,7 @@ const BlockForms = {
             }
         });
 
+        // Special: Acordeon
         if (type === 'Acordeon') {
             const items = [];
             document.querySelectorAll('#acordeonItems .acordeon-item').forEach(item => {
@@ -362,6 +444,32 @@ const BlockForms = {
                 }
             });
             payload.items = items;
+        }
+
+        // Special: Slider
+        if (type === 'Slider') {
+            const slides = [];
+            document.querySelectorAll('#sliderItems .slider-item').forEach(item => {
+                const title = item.querySelector('.slider-title').value.trim();
+                const description = item.querySelector('.slider-desc').value.trim();
+                const imageUrl = item.querySelector('.slider-img').value.trim();
+                const ctaText = item.querySelector('.slider-cta-text').value.trim();
+                const ctaUrl = item.querySelector('.slider-cta-url').value.trim();
+                if (title) slides.push({ title, description, imageUrl, ctaText, ctaUrl });
+            });
+            payload.slides = slides;
+        }
+
+        // Special: Servicios
+        if (type === 'Servicios') {
+            const services = [];
+            document.querySelectorAll('#serviceItems .service-item').forEach(item => {
+                const icon = item.querySelector('.service-icon').value.trim();
+                const name = item.querySelector('.service-name').value.trim();
+                const description = item.querySelector('.service-desc').value.trim();
+                if (name && description) services.push({ icon, name, description });
+            });
+            payload.services = services;
         }
 
         // Special: FeaturesList
@@ -435,6 +543,72 @@ const BlockForms = {
             <div class="form-group">
                 <label class="form-label" style="font-size:0.8rem;">Descripción</label>
                 <textarea class="form-input feature-desc" rows="2" placeholder="Descripción..." required>${this._esc(description)}</textarea>
+            </div>
+        `;
+        container.appendChild(div);
+    },
+
+    // ── Helper: add slider item ──────────────────────────────
+    addSliderItem(title = '', description = '', imageUrl = '', ctaText = '', ctaUrl = '') {
+        const container = document.getElementById('sliderItems');
+        const div = document.createElement('div');
+        div.className = 'slider-item';
+        div.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:0.75rem;position:relative;';
+        div.innerHTML = `
+            <button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:0.5rem;right:0.5rem;background:none;border:none;color:var(--danger);cursor:pointer;font-size:1.1rem;" title="Eliminar">&times;</button>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" style="font-size:0.8rem;">Título del Slide</label>
+                    <input type="text" class="form-input slider-title" placeholder="Título..." value="${this._esc(title)}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="font-size:0.8rem;">Descripción</label>
+                <textarea class="form-input slider-desc" rows="2" placeholder="Descripción...">${this._esc(description)}</textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="font-size:0.8rem;">Imagen URL</label>
+                <div style="display:flex; gap:0.5rem;">
+                    <input type="text" class="form-input slider-img" placeholder="https://..." value="${this._esc(imageUrl)}" style="flex:1;">
+                    <button type="button" class="btn btn-outline" onclick="BlockForms.triggerUpload(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>
+                    <input type="file" style="display:none;" accept="image/*" onchange="BlockForms.handleUpload(this)">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" style="font-size:0.8rem;">Texto CTA</label>
+                    <input type="text" class="form-input slider-cta-text" placeholder="Ej. Ver más..." value="${this._esc(ctaText)}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-size:0.8rem;">URL CTA</label>
+                    <input type="text" class="form-input slider-cta-url" placeholder="https://..." value="${this._esc(ctaUrl)}">
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    },
+
+    // ── Helper: add service item ─────────────────────────────
+    addServiceItem(icon = '', name = '', description = '') {
+        const container = document.getElementById('serviceItems');
+        const div = document.createElement('div');
+        div.className = 'service-item';
+        div.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:0.75rem;position:relative;';
+        div.innerHTML = `
+            <button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:0.5rem;right:0.5rem;background:none;border:none;color:var(--danger);cursor:pointer;font-size:1.1rem;" title="Eliminar">&times;</button>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" style="font-size:0.8rem;">Icono (Emoji/HTML)</label>
+                    <input type="text" class="form-input service-icon" placeholder="💼" value="${this._esc(icon)}" style="max-width:80px;">
+                </div>
+                <div class="form-group" style="flex:2;">
+                    <label class="form-label" style="font-size:0.8rem;">Nombre del Servicio</label>
+                    <input type="text" class="form-input service-name" placeholder="Servicio..." value="${this._esc(name)}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" style="font-size:0.8rem;">Descripción</label>
+                <textarea class="form-input service-desc" rows="2" placeholder="Breve descripción..." required>${this._esc(description)}</textarea>
             </div>
         `;
         container.appendChild(div);

@@ -1,0 +1,176 @@
+---
+const news = [
+  {
+    category: "Noticias",
+    date: "10 de Octubre, 2024",
+    title: "COBATAB implementa nuevas aulas inteligentes en 10 planteles",
+    desc: "Como parte del programa de modernización 2025, se han inaugurado espacios dedicados a la robótica y programación.",
+    image: "https://tabasco.gob.mx/sites/default/files/2024-09/bolet%C3%ADn%20651%20cobatab%20%281%29.jpeg",
+    color: "#d97706"
+  },
+  {
+    category: "Logros",
+    date: "10 de Octubre, 2024",
+    title: "Alumnos destacan en Olimpiada Nacional de Matemáticas",
+    desc: "Tres estudiantes del Plantel 28 obtuvieron medallas de oro y plata en la competencia nacional.",
+    image: "https://tabasco.gob.mx/sites/default/files/2026-02/semaforoincendios18feb.jpg",
+    color: "#be123c"
+  },
+  {
+    category: "Convocatoria",
+    date: "05 de Octubre, 2024",
+    title: "Abierta la convocatoria para Becas de Excelencia 2025",
+    desc: "Conoce los requisitos y fechas para postularte a los apoyos económicos del próximo ciclo escolar.",
+    image: "https://tabasco.gob.mx/sites/default/files/2023-06/IMG_2886.JPG",
+    color: "#1d4ed8"
+  }
+];
+---
+<section class="news-section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="subtitle">ACTUALIDAD</span>
+        <h2>Noticias Recientes</h2>
+      </div>
+      <a href="#" class="view-all">Ver todas las noticias →</a>
+    </div>
+    
+    <div class="news-grid">
+      {news.map(item => (
+        <article class="news-card">
+          <div class="news-img">
+            <img src={item.image} alt={item.title} />
+            <span class="category-badge" style={`background: ${item.color}`}>{item.category}</span>
+          </div>
+          <div class="news-content">
+            <time>{item.date}</time>
+            <h3>{item.title}</h3>
+            <p>{item.desc}</p>
+            <a href="#" class="read-more">Leer más</a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .news-section {
+    padding: 6rem 0;
+    background: #f8fafc;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+  }
+  
+  .subtitle {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+  }
+  
+  h2 {
+    font-size: 2.25rem;
+    color: var(--color-primary);
+  }
+  
+  .view-all {
+    color: var(--color-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+  
+  .news-card {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+  }
+  
+  .news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .news-img {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+  
+  .news-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .news-card:hover .news-img img {
+    transform: scale(1.05);
+  }
+  
+  .category-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+  
+  .news-content {
+    padding: 2rem;
+  }
+  
+  time {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    color: var(--color-text-dark);
+  }
+  
+  p {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .read-more {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .read-more:hover {
+    border-bottom-color: var(--color-primary);
+  }
+</style>

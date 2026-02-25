@@ -1,0 +1,175 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  mediaUrl?: string;
+}
+
+const { title = 'Cápsula del Tiempo', description = 'Un espacio dedicado a preservar nuestra historia...', mediaUrl } = Astro.props;
+---
+<section class="time-capsule">
+  <div class="container glass-container animate-fade-in">
+    <div class="capsule-grid">
+      <div class="capsule-text">
+        <span class="label">PROXIMAMENTE</span>
+        <h2>{title}</h2>
+        <p>{description}</p>
+      </div>
+      
+      <div class="countdown">   
+        <div class="count-item">
+          <span class="number">26</span>
+          <span class="unit">Años</span>
+        </div>
+        <div class="count-item">
+          <span class="number">0</span>
+          <span class="unit">Meses</span>
+        </div>
+        <div class="count-item">
+          <span class="number">0</span>
+          <span class="unit">Días</span>
+        </div>
+        <div class="count-item">
+          <span class="number">0</span>
+          <span class="unit">Horas</span>
+        </div>
+      </div>
+      
+      <div class="capsule-action">
+        <a href="#" class="btn btn-secondary">Conocer más</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .time-capsule {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, var(--color-primary) 0%, #4a0b1d 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .time-capsule::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  
+  .glass-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 2rem;
+    padding: 3.5rem;
+    color: white;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .capsule-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1.8fr 0.8fr;
+    align-items: center;
+    gap: 3rem;
+  }
+  
+  .label {
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: var(--color-secondary);
+    display: block;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+  }
+  
+  h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.25rem;
+    font-weight: 800;
+  }
+  
+  p {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+  
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  
+  .count-item {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2rem 1rem;
+    border-radius: 1.25rem;
+    min-width: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .count-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.12);
+  }
+  
+  .number {
+    display: block;
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    color: var(255,255,255, 0.8);
+  }
+  
+  .unit {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.7;
+    letter-spacing: 1.5px;
+  }
+  
+  .capsule-action {
+    text-align: right;
+  }
+  
+  @media (max-width: 1100px) {
+    .capsule-grid {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 2.5rem;
+    }
+    .capsule-action {
+      text-align: center;
+    }
+    .countdown {
+      order: 2;
+    }
+    .capsule-text {
+      order: 1;
+    }
+    .capsule-action {
+      order: 3;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .countdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .count-item {
+      padding: 1.5rem 0.5rem;
+    }
+  }
+</style>

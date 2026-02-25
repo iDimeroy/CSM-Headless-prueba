@@ -41,9 +41,14 @@
     const carouselModalTitle = document.getElementById('carouselModalTitle');
     const carouselFormError = document.getElementById('carouselFormError');
 
-    // Sections
     const sectionPages = document.getElementById('sectionPages');
     const sectionCarousel = document.getElementById('sectionCarousel');
+    const sectionLanding = document.getElementById('sectionLanding');
+    const sectionModulos = document.getElementById('sectionModulos');
+    const sectionNoticias = document.getElementById('sectionNoticias');
+
+    const landingBlocksList = document.getElementById('landingBlocksList');
+
     const topbarTitle = document.querySelector('.topbar__title');
     const createPageBtn = document.getElementById('createPageBtn');
     const sidebarLinks = document.querySelectorAll('.sidebar__link');
@@ -51,13 +56,46 @@
     let currentPageId = null;
     let currentSection = 'pages';
     let blocksCache = {};
+    let landingPageId = null;
+    let currentLandingBlocks = [];
 
     // ── Section switching ────────────────────────────────────
     sidebarLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const section = link.dataset.section;
+
+            // Manage submenu toggle
+            if (section === 'landing') {
+                const container = document.getElementById('landingMenuContainer');
+                if (container) container.classList.toggle('open');
+            } else {
+                const container = document.getElementById('landingMenuContainer');
+                if (container) container.classList.remove('open');
+            }
+
             switchSection(section);
+        });
+    });
+
+    // Submenu links handling
+    document.querySelectorAll('.sidebar__sublink').forEach(link => {
+        link.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const blockType = link.dataset.block;
+
+            if (currentSection !== 'landing') {
+                switchSection('landing');
+            }
+
+            if (!landingPageId) await loadLandingPage();
+
+            const existingBlock = currentLandingBlocks.find(b => b.type === blockType);
+            if (existingBlock) {
+                AdminApp.editBlock(existingBlock.id);
+            } else {
+                openBlockEditModal(null, blockType);
+            }
         });
     });
 
@@ -70,6 +108,9 @@
 
         // Toggle sections
         sectionPages.style.display = section === 'pages' ? '' : 'none';
+        sectionLanding.style.display = section === 'landing' ? '' : 'none';
+        sectionModulos.style.display = section === 'modulos' ? '' : 'none';
+        sectionNoticias.style.display = section === 'noticias' ? '' : 'none';
         sectionCarousel.style.display = section === 'carousel' ? '' : 'none';
 
         // Update topbar
@@ -80,9 +121,20 @@
             createPageBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nueva Página';
             createPageBtn.onclick = () => openPageModal();
             loadPages();
+        } else if (section === 'landing') {
+            topbarTitle.textContent = 'Landing Page';
+            createPageBtn.style.display = 'none';
+            loadLandingPage();
+        } else if (section === 'modulos') {
+            topbarTitle.textContent = 'Módulos';
+            createPageBtn.style.display = 'none';
+        } else if (section === 'noticias') {
+            topbarTitle.textContent = 'Noticias';
+            createPageBtn.style.display = 'none';
         } else if (section === 'carousel') {
             topbarTitle.textContent = 'Panel de Gestión de Carrusel';
             createPageBtn.style.display = '';
+            createPageBtn.textContent = '';
             createPageBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nuevo Slide';
             createPageBtn.onclick = () => openCarouselModal();
             loadCarousel();
@@ -220,25 +272,51 @@
     async function loadBlocks(pageId) {
         try {
             const page = await API.get(`/admin/pages/${pageId}`);
-            renderBlocksList(page.blocks || []);
+            renderBlocksList(page.blocks || [], blocksList);
         } catch (err) {
             blocksList.innerHTML = `<div class="blocks-empty" style="color:var(--danger);">Error: ${err.message}</div>`;
         }
     }
 
-    function renderBlocksList(blocks) {
+    async function loadLandingPage() {
+        try {
+            landingBlocksList.innerHTML = '<div class="blocks-empty">Cargando bloques...</div>';
+            const pages = await API.get('/admin/pages');
+            let lp = pages.find(p => p.slug === 'landing-page');
+
+            if (!lp) {
+                lp = await API.post('/admin/pages', {
+                    title: 'Landing Page',
+                    slug: 'landing-page',
+                    status: 'PUBLISHED'
+                });
+            }
+
+            currentPageId = lp.id;
+            landingPageId = lp.id;
+
+            const fullPage = await API.get(`/admin/pages/${currentPageId}`);
+            currentLandingBlocks = fullPage.blocks || [];
+            renderBlocksList(currentLandingBlocks, landingBlocksList);
+
+        } catch (err) {
+            landingBlocksList.innerHTML = `<div class="blocks-empty" style="color:var(--danger);">Error: ${err.message}</div>`;
+        }
+    }
+
+    function renderBlocksList(blocks, container) {
         if (!blocks.length) {
-            blocksList.innerHTML = '<div class="blocks-empty">No hay bloques. Agrega el primero.</div>';
+            container.innerHTML = '<div class="blocks-empty">No hay bloques. Agrega el primero.</div>';
             return;
         }
         blocks.sort((a, b) => a.sortOrder - b.sortOrder);
         // Cache block data so edit button can retrieve it by ID
         blocks.forEach(b => { blocksCache[b.id] = b; });
-        blocksList.innerHTML = blocks.map(b => `
+        container.innerHTML = blocks.map(b => `
             <div class="block-card">
                 <div class="block-card__info">
                     <div class="block-card__order">${b.sortOrder}</div>
-                    <div class="block-card__type">${esc(b.type)}</div>
+                    <div class="block-card__type"><strong>${esc(b.type)}</strong></div>
                 </div>
                 <div class="block-card__actions">
                     <button class="btn btn-ghost btn-sm" onclick="AdminApp.editBlock('${b.id}')" title="Editar">
@@ -341,7 +419,13 @@
                 toast('Bloque creado');
             }
             closeBlockEditModal();
-            loadBlocks(currentPageId);
+
+            // Reload appropriate section
+            if (currentSection === 'landing') {
+                loadLandingPage();
+            } else {
+                loadBlocks(currentPageId);
+            }
         } catch (err) {
             blockEditError.textContent = err.message;
             blockEditError.style.display = 'block';
@@ -460,6 +544,9 @@
         if (currentSection === 'carousel') openCarouselModal();
         else openPageModal();
     });
+    document.getElementById('addLandingBlockBtn')?.addEventListener('click', () => {
+        openBlockEditModal(null, 'Slider');
+    });
     document.getElementById('closePageModal').addEventListener('click', closePageModal);
     document.getElementById('cancelPageModal').addEventListener('click', closePageModal);
     document.getElementById('closeBlocksModal').addEventListener('click', closeBlocksModal);
@@ -523,7 +610,11 @@
             try {
                 await API.del(`/admin/blocks/${blockId}`);
                 toast('Bloque eliminado');
-                loadBlocks(currentPageId);
+                if (currentSection === 'landing') {
+                    loadLandingPage();
+                } else {
+                    loadBlocks(currentPageId);
+                }
             } catch (err) { toast(err.message, 'error'); }
         },
 
