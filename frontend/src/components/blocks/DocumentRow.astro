@@ -1,0 +1,371 @@
+---
+export interface DocumentFile {
+  name: string;
+  size: string;
+  url: string;
+}
+
+export interface Props {
+  title: string;
+  description: string;
+  status?: string;
+  version?: string;
+  updatedDate?: string;
+  files?: DocumentFile[];
+}
+
+const { title, description, status = 'VIGENTE', version = '', updatedDate = '', files = [] } = Astro.props;
+
+const resolveUrl = (url?: string) => {
+  if (!url) return '';
+  if (url.startsWith('/')) {
+    return `${import.meta.env.PUBLIC_API_URL || 'http://localhost:8080'}${url}`;
+  }
+  return url;
+};
+
+const statusColors: Record<string, { bg: string; text: string }> = {
+  'VIGENTE':     { bg: '#dcfce7', text: '#166534' },
+  'ACTUALIZADO': { bg: '#dbeafe', text: '#1e40af' },
+  'EN REVISIÓN': { bg: '#fef3c7', text: '#92400e' },
+};
+const sc = statusColors[status] || statusColors['VIGENTE'];
+
+const formattedDate = updatedDate
+  ? new Date(updatedDate).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
+  : '';
+
+const isSingleFile = files.length === 1;
+const fileExt = (name: string) => {
+  const ext = name.split('.').pop()?.toUpperCase() || '';
+  return ext;
+};
+const uid = `docrow-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div class="docrow" data-uid={uid}>
+  <!-- Main Row -->
+  <div class="docrow__main">
+    <!-- Icon -->
+    <div class="docrow__icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7f1d1d" stroke-width="1.5">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+    </div>
+
+    <!-- Info -->
+    <div class="docrow__info">
+      <h4 class="docrow__title">{title}</h4>
+      <div class="docrow__meta">
+        <span class="docrow__badge" style={`background:${sc.bg};color:${sc.text};`}>{status}</span>
+        {version && <span class="docrow__version">{version}</span>}
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="docrow__desc">
+      <p>{description}</p>
+      <div class="docrow__details">
+        {formattedDate && (
+          <span class="docrow__date">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Actualizado: {formattedDate}
+          </span>
+        )}
+        {files.length > 1 && (
+          <span class="docrow__count">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+            {files.length} Archivos
+          </span>
+        )}
+      </div>
+    </div>
+
+    <!-- Action -->
+    <div class="docrow__action">
+      {isSingleFile ? (
+        <a href={resolveUrl(files[0].url)} class="docrow__download-btn" download target="_blank" rel="noopener noreferrer">
+          Descargar
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </a>
+      ) : files.length > 1 ? (
+        <button class="docrow__toggle-btn" data-target={uid} type="button">
+          Ver Archivos
+          <svg class="docrow__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      ) : null}
+    </div>
+  </div>
+
+  <!-- Expandable Files -->
+  {files.length > 1 && (
+    <div class="docrow__files" data-files={uid}>
+      {files.map(file => (
+        <div class="docrow__file-card">
+          <div class="docrow__file-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7f1d1d" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="docrow__file-ext">{fileExt(file.name)}</span>
+          </div>
+          <div class="docrow__file-info">
+            <span class="docrow__file-name">{file.name}</span>
+            {file.size && <span class="docrow__file-size">{file.size}</span>}
+          </div>
+          <a href={resolveUrl(file.url)} class="docrow__file-dl" download target="_blank" rel="noopener noreferrer" title="Descargar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </a>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
+<style>
+  .docrow {
+    max-width: 900px;
+    margin: 1.25rem auto;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+  }
+  .docrow:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+
+  /* Main row */
+  .docrow__main {
+    display: grid;
+    grid-template-columns: auto 1fr 1.5fr auto;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .docrow__icon {
+    width: 52px;
+    height: 52px;
+    background: #fef2f2;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .docrow__info {
+    min-width: 0;
+  }
+  .docrow__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0 0 0.35rem;
+    line-height: 1.3;
+  }
+  .docrow__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .docrow__badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .docrow__version {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .docrow__desc p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #475569;
+    line-height: 1.5;
+  }
+  .docrow__details {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .docrow__date,
+  .docrow__count {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  /* Action buttons */
+  .docrow__action {
+    flex-shrink: 0;
+  }
+  .docrow__toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.2rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #fff;
+    color: #334155;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .docrow__toggle-btn:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+  }
+  .docrow__chevron {
+    transition: transform 0.3s ease;
+  }
+  .docrow.open .docrow__chevron {
+    transform: rotate(180deg);
+  }
+
+  .docrow__download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.4rem;
+    background: #7f1d1d;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.2s;
+    white-space: nowrap;
+  }
+  .docrow__download-btn:hover {
+    background: #991b1b;
+    transform: translateY(-1px);
+    color: #fff;
+  }
+
+  /* Expandable files */
+  .docrow__files {
+    display: none;
+    padding: 0 1.5rem 1.25rem;
+    gap: 0.75rem;
+  }
+  .docrow.open .docrow__files {
+    display: flex;
+    flex-wrap: wrap;
+    animation: docrowSlide 0.3s ease;
+  }
+  @keyframes docrowSlide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .docrow__file-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    min-width: 200px;
+    flex: 1;
+    max-width: 280px;
+    transition: box-shadow 0.2s;
+  }
+  .docrow__file-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .docrow__file-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    flex-shrink: 0;
+  }
+  .docrow__file-ext {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #7f1d1d;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .docrow__file-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .docrow__file-name {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1e293b;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .docrow__file-size {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  .docrow__file-dl {
+    flex-shrink: 0;
+    color: #94a3b8;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+  }
+  .docrow__file-dl:hover {
+    color: #7f1d1d;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .docrow__main {
+      grid-template-columns: auto 1fr;
+      gap: 0.75rem;
+    }
+    .docrow__desc {
+      grid-column: 1 / -1;
+    }
+    .docrow__action {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .docrow__file-card {
+      max-width: 100%;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.docrow__toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const uid = btn.getAttribute('data-target');
+        const docrow = document.querySelector(`.docrow[data-uid="${uid}"]`);
+        if (docrow) {
+          docrow.classList.toggle('open');
+          const isOpen = docrow.classList.contains('open');
+          btn.childNodes[0].textContent = isOpen ? 'Ocultar Archivos ' : 'Ver Archivos ';
+        }
+      });
+    });
+  });
+</script>

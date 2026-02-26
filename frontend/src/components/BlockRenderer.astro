@@ -10,6 +10,7 @@ import Boton from './blocks/Boton.astro';
 import Mapa from './blocks/Mapa.astro';
 import Acordeon from './blocks/Acordeon.astro';
 import SandwichBlock from './blocks/SandwichBlock.astro';
+import DocumentRow from './blocks/DocumentRow.astro';
 
 // Landing Page Specific Components
 import Hero from './landing/Hero.astro';
@@ -45,6 +46,7 @@ const BLOCK_MAP: Record<string, any> = {
   Mapa,
   Acordeon,
   Sandwich: SandwichBlock,
+  DocumentRow,
 };
 
 const Component = BLOCK_MAP[block.type];

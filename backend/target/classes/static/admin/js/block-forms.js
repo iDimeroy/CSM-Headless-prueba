@@ -257,6 +257,39 @@ const BlockForms = {
                     placeholder="Texto después de la imagen (acepta HTML)..." required></textarea>
             </div>`,
 
+        DocumentRow: () => `
+            <div class="form-group">
+                <label class="form-label">Título del Documento</label>
+                <input type="text" class="form-input" data-field="title" placeholder="Ej. Protocolo de actuación en caso de siniestro" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-input form-textarea" data-field="description" rows="3"
+                    placeholder="Breve descripción del documento..." required></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Estado</label>
+                    <select class="form-input" data-field="status">
+                        <option value="VIGENTE">VIGENTE</option>
+                        <option value="ACTUALIZADO">ACTUALIZADO</option>
+                        <option value="EN REVISIÓN">EN REVISIÓN</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Versión</label>
+                    <input type="text" class="form-input" data-field="version" placeholder="V.2.4">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Fecha de Actualización</label>
+                <input type="date" class="form-input" data-field="updatedDate">
+            </div>
+            <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0;">
+            <label class="form-label" style="margin-bottom:0.5rem;">Archivos Adjuntos</label>
+            <div id="docrowFiles"></div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="BlockForms.addDocumentFile()" style="margin-top:0.25rem;">+ Agregar Archivo</button>`,
+
         // Legacy block types
         HeroSection: () => `
             <div class="form-group">
@@ -409,6 +442,15 @@ const BlockForms = {
                 this.addFeatureItem(f.icon, f.title, f.description);
             });
         }
+
+        // Special: DocumentRow files
+        if (type === 'DocumentRow' && Array.isArray(payload.files) && payload.files.length > 0) {
+            const container = document.getElementById('docrowFiles');
+            container.innerHTML = '';
+            payload.files.forEach(f => {
+                this.addDocumentFile(f.name, f.size, f.url);
+            });
+        }
     },
 
     // ── Collect payload from form fields ─────────────────────
@@ -482,6 +524,18 @@ const BlockForms = {
                 if (title && description) features.push({ icon, title, description });
             });
             payload.features = features;
+        }
+
+        // Special: DocumentRow
+        if (type === 'DocumentRow') {
+            const files = [];
+            document.querySelectorAll('#docrowFiles .docrow-file-item').forEach(item => {
+                const name = item.querySelector('.docrow-file-name').value.trim();
+                const size = item.querySelector('.docrow-file-size').value.trim();
+                const url = item.querySelector('.docrow-file-url').value.trim();
+                if (name && url) files.push({ name, size, url });
+            });
+            payload.files = files;
         }
 
         return payload;
@@ -609,6 +663,38 @@ const BlockForms = {
             <div class="form-group">
                 <label class="form-label" style="font-size:0.8rem;">Descripción</label>
                 <textarea class="form-input service-desc" rows="2" placeholder="Breve descripción..." required>${this._esc(description)}</textarea>
+            </div>
+        `;
+        container.appendChild(div);
+    },
+
+    // ── Helper: add document file item ───────────────────────
+    addDocumentFile(name = '', size = '', url = '') {
+        const container = document.getElementById('docrowFiles');
+        const div = document.createElement('div');
+        div.className = 'docrow-file-item';
+        div.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:0.75rem;position:relative;';
+        div.innerHTML = `
+            <button type="button" onclick="this.parentElement.remove()" style="position:absolute;top:0.5rem;right:0.5rem;background:none;border:none;color:var(--danger);cursor:pointer;font-size:1.1rem;" title="Eliminar">&times;</button>
+            <div class="form-row">
+                <div class="form-group" style="flex:2;">
+                    <label class="form-label" style="font-size:0.8rem;">Nombre del archivo</label>
+                    <input type="text" class="form-input docrow-file-name" placeholder="Ej. Protocolo_Base.pdf" value="${this._esc(name)}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-size:0.8rem;">Tamaño</label>
+                    <input type="text" class="form-input docrow-file-size" placeholder="Ej. 2.4 MB" value="${this._esc(size)}">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" style="font-size:0.8rem;">Archivo (URL)</label>
+                <div style="display:flex; gap:0.5rem;">
+                    <input type="text" class="form-input docrow-file-url" placeholder="URL o subir archivo..." value="${this._esc(url)}" style="flex:1;" required>
+                    <button type="button" class="btn btn-outline" onclick="BlockForms.triggerUpload(this)" title="Subir Archivo">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </button>
+                    <input type="file" style="display:none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,image/*" onchange="BlockForms.handleUpload(this)">
+                </div>
             </div>
         `;
         container.appendChild(div);
